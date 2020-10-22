@@ -7,9 +7,10 @@ class Players
     char board[3][3]={{'a','b','c'},
 											{'d','e','f'},
 											{'g','h','i'}};
-    int i,j,turn,flag=0,flag2=1;
+    int i,j,turn;
     char x,place;
-
+		bool draw = false;
+		bool visited[9] = {false};
 public:
     void gameInit(){
       cout<<"ENTER A NAME FOR PLAYER 'X': ";
@@ -25,10 +26,13 @@ public:
 			(choice == 1 || choice == 2) ? printBoard() : restart();
 			if(choice == 1){
 				cout << "Player 1 Selected. " << endl;
+				turn = 1;
 			}
 			else{
 				cout << "Player 2 Selected." << endl;
+				turn = 2;
 			}
+			showTurn();
 	    turnCounter();
     }
 
@@ -51,55 +55,65 @@ public:
         }
     }
 
-    void turn1()
+    void showTurn()
     {
-        if(turn%2==0){
+        if(turn == 1){
+					cout<<"PLAYER OF CURRENT TURN: "<<player1<<"\n";
+        	x='X';
+        }
+        else if(turn == 2){
 					cout<<"PLAYER OF CURRENT TURN: "<<player2<<"\n";
         	x='O';
-        }
-        else if(turn%2!=0){
-					cout<<"PLAYER OF CURRENT TURN: "<<player1<<"\n";
-        x='X';
 				}
 		}
 
-    void disp(){
+    void getUserChoice(){
         cout<<"ENTER THE NUMBER YOU WANT TO OCCUPY: ";
         cin>>place;
+				if(visited[place-97]){
+					cout << "Please enter a Valid place" << endl;
+					restartUserChoice();
+				}else{
+					visited[place-97] = true;
+				}
     }
+		void restartUserChoice(){
+			getUserChoice();
+		}
 
     void turnCounter(){
-        for(turn=1; turn<11; turn++){
-					if(flag2!=0){
+			getUserChoice();
+
+        for(int step = 1; step < 10; step++){
+					bool chk = true;
 						switch(place){
-						    case 'a':{	board[0][0]=x; Display(); Result(); break; }
-						    case 'b':{	board[0][1]=x; Display(); Result(); break; }
-						    case 'c':{	board[0][2]=x; Display(); Result(); break; }
-						    case 'd':{	board[1][0]=x; Display(); Result(); break; }
-						    case 'e':{	board[1][1]=x; Display(); Result(); break; }
-						    case 'f':{	board[1][2]=x; Display(); Result(); break; }
-						    case 'g':{	board[2][0]=x; Display(); Result(); break; }
-						    case 'h':{	board[2][1]=x; Display(); Result(); break; }
-						    case 'i':{	board[2][2]=x; Display(); Result(); break; }
-						    default: {cout<<"PLEASE ENTER VALID NUMBER SPACE: "; turn=turn-1; }
+						    case 'a':{	board[0][0]=x; display(); Result(); break; }
+						    case 'b':{	board[0][1]=x; display(); Result(); break; }
+						    case 'c':{	board[0][2]=x; display(); Result(); break; }
+						    case 'd':{	board[1][0]=x; display(); Result(); break; }
+						    case 'e':{	board[1][1]=x; display(); Result(); break; }
+						    case 'f':{	board[1][2]=x; display(); Result(); break; }
+						    case 'g':{	board[2][0]=x; display(); Result(); break; }
+						    case 'h':{	board[2][1]=x; display(); Result(); break; }
+						    case 'i':{	board[2][2]=x; display(); Result(); break; }
+						    default: {cout<<"PLEASE ENTER VALID NUMBER SPACE: "; step--; chk = false; }
 							}
-				    while(turn<10){
-							if(flag2!=0){
-								turn1();
-				    	  disp();
+							if(step == 9){
+								isDraw();
 							}
-				    	break;
+							if(chk){
+							if(turn == 1)
+								turn = 2;
+							else
+								turn = 1;
+							}
+								showTurn();
+								getUserChoice();
 						}
-				    while(turn==10){
-				        Display();
-				        Result();
-				        Result2();
-				        break;
-				    }
-    			}
-				}
+			        display();
+
 		}
-    void Display()
+    void display()
     {
          for(i=0; i<3; i++){
             for(j=0; j<3; j++){
@@ -112,52 +126,54 @@ public:
     void Result(){
         if(board[0][0]==board[1][0]&&board[1][0]==board[2][0]){
 					cout<<"WINNER IS:"<<board[1][0];
-        	flag2=0;
+        	exit(0);
         }
 
         else if(board[0][1]==board[1][1]&&board[1][1]==board[2][1]){
             cout<<"WINNER IS:"<<board[1][1];
-            flag2=0;
+            exit(0);
         }
 
         else if(board[0][2]==board[1][2]&&board[1][2]==board[2][2]){
             cout<<"WINNER IS:"<<board[1][2];
-            flag2=0;
+            exit(0);
         }
 
         else if(board[0][0]==board[0][1]&&board[0][1]==board[0][2]){
             cout<<"WINNER IS:"<<board[0][1];
-            flag2=0;
+            exit(0);
         }
 
         else if(board[1][0]==board[1][1]&&board[1][1]==board[1][2]){
             cout<<"WINNER IS:"<<board[0][1];
-            flag2=0;
+            exit(0);
         }
 
         else if(board[2][0]==board[2][1]&&board[2][1]==board[2][2]){
             cout<<"WINNER IS:"<<board[2][1];
-            flag2=0;
+            exit(0);
         }
 
         else if(board[0][2]==board[1][1]&&board[1][1]==board[2][0]){
             cout<<"WINNER IS:"<<board[2][0];
-            flag2=0;
+            exit(0);
         }
 
         else if(board[0][0]==board[1][1]&&board[1][1]==board[2][2]){
             cout<<"WINNER IS:"<<board[2][0];
-            flag2=0;
+            exit(0);
         }
 
         else{
-            flag=1;
+            draw=1;
 			 }
     }
 
-    void Result2(){
-        if(flag==1)
+    void isDraw(){
+        if(draw==1){
             cout<<"*******MATCH DRAW**********";
+						exit(0);
+					}
     }
 };
 
